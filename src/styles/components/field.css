@@ -26,4 +26,24 @@
     background-color: transparent;
     border: var(--border);
     border-radius: var(--border-radius);
+
+    &:hover,
+    &:focus {
+        color: var(--color-dark-2);
+    }
+
+    &:focus {
+        background-color: var(--color-gray-1);
+        outline: none;
+    }
+
+    &[type="search"] {
+        &:placeholder-shown {
+            padding-right: calc(var(--fieldInputPaddinX) * 2 + var(--fieldSearchInputIconSize));
+        };
+        background-image: url("../../icon/Search.svg");
+        background-position: calc(100% - var(--fieldInputPaddinX)) 50%;
+        background-size: var(--fieldSearchInputIconSize);
+        background-repeat: no-repeat;
+    }
 }
