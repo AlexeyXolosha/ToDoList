@@ -3,7 +3,7 @@ class Todo {
         root: '[data-js-todo]',
         newTaskForm: '[data-js-todo-new-task-form]',
         newTaskInput: '[data-js-todo-new-task-input]',
-        searchTaskFrom: '[data-js-todo-search]',
+        searchTaskForm: '[data-js-todo-search]',
         searchTaskInput: '[data-js-todo-search-input]',
         totalTasks: '[data-js-todo-total-tasks]',
         deleteAllButton: '[data-js-todo-delete-all-button]',
@@ -40,6 +40,68 @@ class Todo {
         this.render()
         this.bindEvents()
     }
+
+    getItemsFromLocalStorage() {
+        const rawData = localStorage.getItem(this.localStorageKey)
+
+        if (!rawData) {
+            return []
+        }
+
+        try {
+            const parsedDate = JSON.parse(rawData)
+
+            return Array.isArray(parsedDate) ? parsedDate : []
+        } catch {
+            console.error('Todo items parse error')
+            return []
+        }
+    }
+    saveItemsToLocalStorage() {
+        localStorage.setItem(
+            this.localStorageKey,
+            JSON.stringify(this.state.items)
+        )
+    }
+    render() {
+        this.totalTasksElement.textContent = this.state.items.length
+
+        this.deleteAllButtonElement.classList.toggle(
+            this.stateClasses.isVisible,
+            this.state.items.length > 0
+        )
+
+        const items = this.state.filteredItems ?? this.state.items
+
+        this.listElement.innerHTML = items.map(({id, title, isChecked}) => `
+        <li class="todo__item todo-item" data-js-todo-item>
+            <input type="checkbox" id="${id}" class="todo-item__checkbox" ${isChecked ? 'checked' : ''} data-js-todo-item-checkbox>
+            <label for="${id}" class="todo-item__label" data-js-todo-item-label>${title}</label>
+            <button class="todo-item__delete-button" type="button" aria-label="Delete" title="Delete"
+                    data-js-todo-item-delete-button>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 5L5 15M5 5L15 15" stroke="#757575" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </li>
+        `).join('')
+
+        const isEmptyFilteredItems = this.state.filteredItems?.length === 0
+        const isEmptyItems = this.state.items.length === 0
+
+        this.emptyMessageElement.textContent = isEmptyFilteredItems ? 'Tasks not found' : isEmptyItems ? 'There are no tasks yet' : ''
+    }
+
+    addItem() {
+        this.state.items.push({
+            id: crypto?.randomUUID()
+        })
+    }
+
+    deleteItem() {}
+
+    toggleCheckedState() {}
 }
 
 new Todo()
